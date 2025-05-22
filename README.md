@@ -15,7 +15,8 @@ Perfect for gentle reminders, focus sessions, or any recurring nudge you need!
   - System sound
   - Taskbar icon flashing
 - **Auto-Restart:** Timer restarts automatically after each cycle.
-- **Auto-Start Option:** Start timer automatically when the app launches.
+- **Auto-Start Timer Option:** Start timer automatically when the app launches.
+- **Auto-Start with Windows:** Option to start the app with Windows.
 - **Modern UI:** Frameless, dark, rounded, and fully custom-drawn.
 - **Settings Saved:** All preferences are stored in a JSON config file.
 
@@ -49,7 +50,7 @@ dotnet publish -c Release -r win-x64 --self-contained=true
 
 ## Customization
 
-- No custom sound support. The app uses the default Windows system sound for notifications.
+- The app uses the default Windows system sound for notifications.
 
 ## License
 
