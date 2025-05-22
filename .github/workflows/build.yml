@@ -1,11 +1,13 @@
 name: Build and Release Windows EXE
-
+permissions:
+    contents: write
 on:
   push:
     branches:
       - master
 
 jobs:
+
   build:
     runs-on: windows-latest
 
@@ -21,7 +23,7 @@ jobs:
       - name: Get version from tag or commit
         id: get_version
         run: |
-            TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
+            TAG=$(git describe --tags --abbrev=0 || echo "0.1.0")
             COMMITS=$(git rev-list $TAG..HEAD --count || echo "0")
             SHORT_SHA=$(git rev-parse --short HEAD)
             VERSION="${TAG}.${COMMITS}+${SHORT_SHA}"
