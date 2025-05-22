@@ -25,10 +25,10 @@ jobs:
         shell: bash
 
       - name: Restore dependencies
-        run: dotnet restore NudgeTimer/NudgeTimer.csproj
+        run: dotnet restore ./NudgeTimer.csproj
 
       - name: Build and publish self-contained EXE
-        run: dotnet publish NudgeTimer/NudgeTimer.csproj -c Release -r win-x64 --self-contained true -p:Version=${{ steps.get_version.outputs.VERSION }} -o publish
+        run: dotnet publish ./NudgeTimer.csproj -c Release -r win-x64 --self-contained true -p:Version=${{ steps.get_version.outputs.VERSION }} -o publish
 
       - name: Rename EXE with version
         run: |
