@@ -1,0 +1,185 @@
+<Window x:Class="NudgeTimer.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Timer Settings" Height="400" Width="500"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#FF2D2D2D"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Icon="pack://application:,,,/nudge.ico">
+    <Window.Resources>
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="Background" Value="#FF23272F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="MinWidth" Value="80"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF374151"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF111827"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="#FF23272F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderBrush" Value="#FF374151"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="0,0,0,15"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ModernCheckBox" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Border"
+                                    Width="20" Height="20"
+                                    CornerRadius="4"
+                                    Background="#FF23272F"
+                                    BorderBrush="#FF374151"
+                                    BorderThickness="1"
+                                    Margin="0,0,8,0">
+                                <Path x:Name="CheckMark"
+                                      Data="M 4 10 L 9 15 L 16 6"
+                                      Stroke="White"
+                                      StrokeThickness="2"
+                                      Visibility="Collapsed"/>
+                            </Border>
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Border" Property="Background" Value="#FF374151"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Border CornerRadius="12" Background="#FF2D2D2D" Padding="0">
+        <Grid Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Custom Title Bar -->
+            <Grid Grid.Row="0" Background="#FF1E1E1E" Height="40" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Timer Settings"
+                           Foreground="White"
+                           FontSize="20"
+                           Margin="16,0"
+                           VerticalAlignment="Center"/>
+                <Button x:Name="CloseButton"
+                        Content="✕"
+                        Style="{StaticResource ModernButton}"
+                        Width="36"
+                        Height="32"
+                        Click="CloseButton_Click"
+                        Margin="8,4,16,4"
+                        Grid.Column="1"/>
+            </Grid>
+
+            <!-- Settings Content -->
+            <StackPanel Grid.Row="1" Margin="32,16,32,16">
+                <!-- Target Minutes -->
+                <TextBlock Text="Target Minutes:"
+                           Foreground="White"
+                           Margin="0,0,0,5"
+                           FontSize="14"/>
+                <TextBox x:Name="TargetMinutesTextBox"
+                         Width="100"
+                         HorizontalAlignment="Left"
+                         Style="{StaticResource ModernTextBox}"/>
+
+                <!-- Notification Settings -->
+                <TextBlock Text="Notification Settings:"
+                           Foreground="White"
+                           Margin="0,0,0,5"
+                           FontSize="14"/>
+                <CheckBox x:Name="ShowNotificationCheckBox"
+                          Content="Show Windows Notification"
+                          Style="{StaticResource ModernCheckBox}"/>
+                <CheckBox x:Name="SoundEnabledCheckBox"
+                          Content="Play Sound"
+                          Style="{StaticResource ModernCheckBox}"/>
+                <CheckBox x:Name="TaskbarFlashCheckBox"
+                          Content="Flash Taskbar"
+                          Style="{StaticResource ModernCheckBox}"/>
+
+                <!-- Auto Start -->
+                <CheckBox x:Name="AutoStartCheckBox"
+                          Content="Start Timer on Application Launch"
+                          Style="{StaticResource ModernCheckBox}"
+                          Margin="0,0,0,8"/>
+                <CheckBox x:Name="RunOnWindowsStartupCheckBox"
+                          Content="Start Nudge Timer with Windows"
+                          Style="{StaticResource ModernCheckBox}"
+                          Margin="0,0,0,15"/>
+            </StackPanel>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="2" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right"
+                        Margin="0,0,24,16">
+                <Button x:Name="SaveButton"
+                        Content="Save"
+                        Style="{StaticResource ModernButton}"
+                        Click="SaveButton_Click"/>
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        Style="{StaticResource ModernButton}"
+                        Click="CancelButton_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window> 
