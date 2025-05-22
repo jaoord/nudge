@@ -53,12 +53,12 @@ jobs:
       - name: Delete Existing Release and Tag (if any)
         if: startsWith(env.TAG_NAME, 'v')
         run: |
-          if gh release view "${{ env.TAG_NAME }}" > /dev/null 2>&1; then
-            echo "Deleting existing release and tag: ${{ env.TAG_NAME }}"
+          if (gh release view "${{ env.TAG_NAME }}") {
+            Write-Host "Deleting existing release and tag: ${{ env.TAG_NAME }}"
             gh release delete "${{ env.TAG_NAME }}" --yes
-            git push origin --delete "${{ env.TAG_NAME }}" || true
-            git tag -d "${{ env.TAG_NAME }}" || true
-          fi
+            git push origin --delete "${{ env.TAG_NAME }}" || $true
+            git tag -d "${{ env.TAG_NAME }}" || $true
+          }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
