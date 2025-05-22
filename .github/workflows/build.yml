@@ -50,12 +50,6 @@ jobs:
       - name: Rename EXE with version
         run: mv publish/NudgeTimer.exe publish/NudgeTimer-${{ env.TAG_NAME }}.exe
 
-      - name: Setup GitHub CLI
-        if: startsWith(env.TAG_NAME, 'v')
-        uses: cli/cli@v2
-        with:
-          version: latest
-
       - name: Delete Existing Release and Tag (if any)
         if: startsWith(env.TAG_NAME, 'v')
         run: |
