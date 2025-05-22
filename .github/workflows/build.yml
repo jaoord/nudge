@@ -21,33 +21,36 @@ jobs:
       - name: Get version from tag or commit
         id: get_version
         run: |
-          echo "##[set-output name=VERSION;]$(git describe --tags --always --dirty)"
+            TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
+            COMMITS=$(git rev-list $TAG..HEAD --count || echo "0")
+            SHORT_SHA=$(git rev-parse --short HEAD)
+            VERSION="${TAG}.${COMMITS}+${SHORT_SHA}"
+            echo "VERSION=${VERSION}" >> $GITHUB_ENV
         shell: bash
 
       - name: Restore dependencies
         run: dotnet restore ./NudgeTimer.csproj
 
       - name: Build and publish self-contained EXE
-        run: dotnet publish ./NudgeTimer.csproj -c Release -r win-x64 --self-contained true -p:Version=${{ steps.get_version.outputs.VERSION }} -o publish
-
+        run: dotnet publish ./NudgeTimer.csproj -c Release -r win-x64 --self-contained true -p:Version=${{ env.VERSION }} -o publish
+      
       - name: Rename EXE with version
-        run: |
-          mv publish/NudgeTimer.exe publish/NudgeTimer-${{ steps.get_version.outputs.VERSION }}.exe
-
+        run: mv publish/NudgeTimer.exe publish/NudgeTimer-${{ env.VERSION }}.exe
+      
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Upload EXE to Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          files: publish/NudgeTimer-${{ steps.get_version.outputs.VERSION }}.exe
+          tag_name: ${{ env.VERSION }}
+          files: publish/NudgeTimer-${{ env.VERSION }}.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
