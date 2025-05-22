@@ -23,10 +23,15 @@ jobs:
       - name: Get version from tag or commit
         id: get_version
         run: |
-            TAG=$(git describe --tags --abbrev=0 || echo "0.1.0")
-            COMMITS=$(git rev-list $TAG..HEAD --count || echo "0")
+            TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+            if [ -n "$TAG" ]; then
+            VERSION="$TAG"
+            else
+            BASE_TAG=$(git describe --tags --abbrev=0 || echo "0.1.0")
+            COMMITS=$(git rev-list $BASE_TAG..HEAD --count || echo "0")
             SHORT_SHA=$(git rev-parse --short HEAD)
-            VERSION="${TAG}.${COMMITS}+${SHORT_SHA}"
+            VERSION="${BASE_TAG}.${COMMITS}+${SHORT_SHA}"
+            fi
             echo "VERSION=${VERSION}" >> $GITHUB_ENV
         shell: bash
 
