@@ -35,6 +35,7 @@ jobs:
             SHORT_SHA=$(git rev-parse --short HEAD)
             VERSION="${BASE_TAG}.${COMMITS}+${SHORT_SHA}"
           fi
+          VERSION="${VERSION#v}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
         shell: bash
 
