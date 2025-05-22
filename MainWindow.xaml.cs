@@ -109,7 +109,7 @@ public partial class MainWindow : Window
     {
         string startupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
         string shortcutPath = System.IO.Path.Combine(startupFolder, "Nudge Timer.lnk");
-        string exePath = Assembly.GetExecutingAssembly().Location;
+        string exePath = Path.Combine(AppContext.BaseDirectory, AppDomain.CurrentDomain.FriendlyName);
 
         if (enable)
         {
