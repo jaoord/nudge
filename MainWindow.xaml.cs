@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 using System.IO;
 using System.Windows.Resources;
+using Microsoft.Win32;
 
 namespace NudgeTimer;
 
@@ -77,6 +78,8 @@ public partial class MainWindow : Window
 
         // Set the window handle for taskbar flashing
         Loaded += (s, e) => _timerService.SetMainWindowHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
+
+        Microsoft.Win32.SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
     }
 
     private async void LoadSettingsAsync()
@@ -196,6 +199,19 @@ public partial class MainWindow : Window
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
         _notifyIcon.Dispose();
+        Microsoft.Win32.SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+    }
+
+    private void SystemEvents_SessionSwitch(object? sender, SessionSwitchEventArgs e)
+    {
+        if (e.Reason == SessionSwitchReason.SessionLock)
+        {
+            _timerService.Pause();
+        }
+        else if (e.Reason == SessionSwitchReason.SessionUnlock)
+        {
+            _timerService.Resume();
+        }
     }
 
     private void CloseButton_Click(object sender, RoutedEventArgs e)

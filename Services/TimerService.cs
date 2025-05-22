@@ -15,6 +15,8 @@ namespace NudgeTimer.Services
         private readonly NotifyIcon _notifyIcon;
         private TimerSettings _settings;
         private IntPtr _mainWindowHandle;
+        private bool _isPaused = false;
+        private TimeSpan _pausedElapsed = TimeSpan.Zero;
 
         public event EventHandler<TimeSpan>? TimeUpdated;
         public event EventHandler? TimerCompleted;
@@ -53,6 +55,26 @@ namespace NudgeTimer.Services
         public void UpdateSettings(TimerSettings settings)
         {
             _settings = settings;
+        }
+
+        public void Pause()
+        {
+            if (!_isPaused)
+            {
+                _timer.Stop();
+                _pausedElapsed = DateTime.Now - _startTime;
+                _isPaused = true;
+            }
+        }
+
+        public void Resume()
+        {
+            if (_isPaused)
+            {
+                _startTime = DateTime.Now - _pausedElapsed;
+                _timer.Start();
+                _isPaused = false;
+            }
         }
 
         private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
