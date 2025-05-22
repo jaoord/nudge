@@ -5,8 +5,10 @@ permissions:
 
 on:
   push:
+    branches:
+      - master
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   build:
@@ -29,7 +31,7 @@ jobs:
             TAG_NAME="$TAG"
             VERSION="${TAG#v}"
           else
-            BASE_TAG=$(git describe --tags --abbrev=0 || echo "0.1.0")
+            BASE_TAG=$(git describe --tags --abbrev=0 || echo "v0.1.0")
             COMMITS=$(git rev-list $BASE_TAG..HEAD --count || echo "0")
             SHORT_SHA=$(git rev-parse --short HEAD)
             TAG_NAME="${BASE_TAG}.${COMMITS}+${SHORT_SHA}"
@@ -48,22 +50,37 @@ jobs:
       - name: Rename EXE with version
         run: mv publish/NudgeTimer.exe publish/NudgeTimer-${{ env.TAG_NAME }}.exe
 
-      - name: Create GitHub Release
+      - name: Setup GitHub CLI
         if: startsWith(env.TAG_NAME, 'v')
-        uses: softprops/action-gh-release@v2
+        uses: cli/cli@v2
         with:
-          tag_name: ${{ env.TAG_NAME }}
-          name: Release ${{ env.TAG_NAME }}
-          draft: false
-          prerelease: false
+          version: latest
+
+      - name: Delete Existing Release and Tag (if any)
+        if: startsWith(env.TAG_NAME, 'v')
+        run: |
+          if gh release view "${{ env.TAG_NAME }}" > /dev/null 2>&1; then
+            echo "Deleting existing release and tag: ${{ env.TAG_NAME }}"
+            gh release delete "${{ env.TAG_NAME }}" --yes
+            git push origin --delete "${{ env.TAG_NAME }}" || true
+            git tag -d "${{ env.TAG_NAME }}" || true
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create New Release
+        if: startsWith(env.TAG_NAME, 'v')
+        run: |
+          gh release create "${{ env.TAG_NAME }}" \
+            --title "Release ${{ env.TAG_NAME }}" \
+            --notes "Release ${{ env.TAG_NAME }}" \
+            --latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload EXE to Release
         if: startsWith(env.TAG_NAME, 'v')
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ env.TAG_NAME }}
-          files: publish/NudgeTimer-${{ env.TAG_NAME }}.exe
+        run: |
+          gh release upload "${{ env.TAG_NAME }}" publish/NudgeTimer-${{ env.TAG_NAME }}.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
